@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Flame,
   Trophy,
@@ -19,24 +19,28 @@ import {
   Puzzle,
   CheckCircle2,
   Lock,
-} from "lucide-react";
-import AppHeader from "../components/AppHeader";
-import BottomNav from "../components/BottomNav";
-import ContributionGrid from "../components/ContributionGrid";
-import StatCard from "../components/StatCard";
-import AchievementCard from "../components/AchievementCard";
-import WeeklyStrip from "../components/WeeklyStrip";
-import Avatar from "../components/Avatar";
-import GithubActivityCard from "../components/GithubActivityCard";
-import DayCard from "../components/DayCard";
-import DetailSheet from "../components/DetailSheet";
-import { useChallengeState } from "../lib/useChallengeState";
-import { getDayData } from "../data/challenge";
+  TrendingUp,
+  Zap,
+} from 'lucide-react';
+import AppHeader from '../components/AppHeader';
+import BottomNav from '../components/BottomNav';
+import ContributionGrid from '../components/ContributionGrid';
+import StatCard from '../components/StatCard';
+import AchievementCard from '../components/AchievementCard';
+import WeeklyStrip from '../components/WeeklyStrip';
+import Avatar from '../components/Avatar';
+import GithubActivityCard from '../components/GithubActivityCard';
+import DayCard from '../components/DayCard';
+import DetailSheet from '../components/DetailSheet';
+import RecruiterRadar from '../components/RecruiterRadar';
+import { useChallengeState } from '../lib/useChallengeState';
+import { getDayData } from '../data/challenge';
+import { getTimeGreeting } from '../data/student';
 
 type Detail =
-  | { kind: "day"; day: number }
-  | { kind: "stat"; key: "completed" | "streak" | "completion" | "standing" }
-  | { kind: "achievement"; key: string };
+  | { kind: 'day'; day: number }
+  | { kind: 'stat'; key: 'completed' | 'streak' | 'completion' | 'standing' }
+  | { kind: 'achievement'; key: string };
 
 export default function Dashboard() {
   const {
@@ -63,130 +67,239 @@ export default function Dashboard() {
   const todayDone = isDayCompleted(liveDay);
   const isFirstDay = liveDay <= 1 && completedDays === 0;
   const nextDay = getDayData(liveDay + 1);
+  const greeting = getTimeGreeting();
 
   const achievements = [
     {
-      key: "first-commit",
+      key: 'first-commit',
       icon: GitCommitVertical,
-      label: "First Commit",
+      label: 'First Commit',
       unlocked: completedDays >= 1,
-      description: "Unlocks the moment you submit your very first day's proof of work.",
+      description: 'Unlocks when you submit your very first day\'s proof of work.',
       goal: 1,
     },
     {
-      key: "streak-7",
+      key: 'streak-7',
       icon: Flame,
-      label: "7 Day Streak",
+      label: '7 Day Streak',
       unlocked: currentStreak >= 7,
-      description: "Unlocks when your current streak reaches 7 days in a row. A Streak Freeze can help protect it.",
+      description: 'Unlocks when your current streak reaches 7 consecutive days.',
       goal: 7,
     },
     {
-      key: "10-shipped",
+      key: '10-shipped',
       icon: Rocket,
-      label: "10 Projects Shipped",
+      label: '10 Projects',
       unlocked: completedDays >= 10,
-      description: "Unlocks after 10 total days completed — it doesn't need to be a streak, just 10 builds shipped.",
+      description: 'Unlocks after 10 total days completed — streak or not.',
       goal: 10,
     },
     {
-      key: "portfolio",
+      key: 'portfolio',
       icon: Briefcase,
-      label: "Public Portfolio",
+      label: 'Portfolio',
       unlocked: completedDays >= 14,
-      description: "Unlocks at 14 days completed — by then you've got two weeks of public, linked proof of work.",
+      description: 'Unlocks at 14 days — you\'ve got two weeks of linked public proof.',
       goal: 14,
     },
   ];
 
-  // "Your Journey" — every day from Day 1 is reachable here, not just today.
-  // Includes a few upcoming (locked) days too, so clicking still gives
-  // information about what's coming, not just what's done.
   const journeyDays = Array.from(
     { length: Math.min(liveDay + 3, challengeLength) },
     (_, i) => i + 1
   );
 
-  const openDay = (day: number) => setDetail({ kind: "day", day });
+  const openDay = (day: number) => setDetail({ kind: 'day', day });
 
   return (
-    <div className="min-h-screen overflow-x-hidden pb-24 md:pb-12">
+    <div className="min-h-screen overflow-x-hidden pb-28 md:pb-10">
       <AppHeader />
 
-      <main className="mx-auto max-w-5xl px-4 pt-5 sm:px-6 sm:pt-8">
-        {/* Greeting */}
-        <div className="mb-5 flex items-center gap-3 sm:mb-6">
+      <main className="mx-auto max-w-5xl px-4 pt-5 sm:px-6 sm:pt-7">
+
+        {/* ── Greeting ─────────────────────────────────────────────── */}
+        <div className="mb-5 flex items-center gap-3">
           <Avatar name={student.name} src={student.avatar} size="lg" />
-          <div>
-            <p className="text-[13px] text-muted">Welcome back,</p>
-            <h1 className="font-display text-xl font-semibold text-paper sm:text-2xl">
-              {student.name || "Student"}
+          <div className="min-w-0">
+            <p className="text-[12.5px] text-dusk">{greeting},</p>
+            <h1 className="font-display text-xl font-bold text-snow truncate">
+              {student.name.split(' ')[0]} 👋
             </h1>
+            <p className="text-[12px] text-ash">
+              Day {liveDay} of {challengeLength} · {student.track}
+            </p>
           </div>
         </div>
 
         <div className="grid min-w-0 gap-5 lg:grid-cols-[1.3fr_1fr]">
+
+          {/* ── Left column ──────────────────────────────────────── */}
           <div className="flex min-w-0 flex-col gap-5">
-            {/* Hero progress card */}
-            <section className="rounded-2xl border border-ink-600 bg-ink-700 p-5 shadow-card sm:p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="font-mono text-xs tracking-wide text-muted">
-                    DAY {liveDay} OF {challengeLength}
+
+            {/* Streak hero card */}
+            <section className="relative overflow-hidden rounded-2xl border border-edge bg-card p-5 shadow-card sm:p-6">
+              {/* Glow blob */}
+              <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-fire/10 blur-2xl" />
+
+              <div className="relative">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-dusk">
+                      DAY {liveDay} OF {challengeLength}
+                    </p>
+                    {isFirstDay ? (
+                      <p className="mt-1.5 font-display text-lg font-bold text-snow">
+                        Your streak starts today 🎯
+                      </p>
+                    ) : currentStreak === 0 ? (
+                      <p className="mt-1.5 font-display text-lg font-bold text-snow">
+                        Streak reset — start fresh today
+                      </p>
+                    ) : (
+                      <div className="mt-1.5 flex items-baseline gap-2">
+                        <span className="font-mono text-[3.5rem] font-bold leading-none text-fire">
+                          {currentStreak}
+                        </span>
+                        <div>
+                          <Flame size={20} className="text-fire" />
+                          <p className="font-mono text-[11px] text-fire-light">day streak</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="rounded-full border border-win/30 bg-win/10 px-3 py-1.5 text-center">
+                    <p className="font-mono text-[13px] font-bold text-win">{progressPercent}%</p>
+                    <p className="text-[9px] text-dusk">done</p>
+                  </div>
+                </div>
+
+                {isFirstDay && (
+                  <p className="mt-1.5 text-[13px] text-ash">Your first build starts here. No experience needed.</p>
+                )}
+                {!isFirstDay && currentStreak === 0 && (
+                  <p className="mt-1 text-[13px] text-ash">
+                    Missing one day doesn't erase your progress — {completedDays} days already completed.
                   </p>
-                  {isFirstDay ? (
-                    <p className="mt-1.5 flex items-center gap-1.5 font-display text-lg font-semibold text-marigold">
-                      <Flame size={18} /> Start your streak today
-                    </p>
-                  ) : currentStreak === 0 ? (
-                    <p className="mt-1.5 font-display text-lg font-semibold text-paper">Your streak reset</p>
-                  ) : (
-                    <p className="mt-1.5 flex items-center gap-1.5 font-display text-lg font-semibold text-paper">
-                      <Flame size={18} className="text-marigold" /> {currentStreak} DAY STREAK
-                    </p>
-                  )}
+                )}
+
+                {/* Weekly strip */}
+                <div className="mt-5">
+                  <WeeklyStrip days={weekly} />
                 </div>
-                <div className="rounded-full bg-teal/12 px-3 py-1 font-mono text-sm font-semibold text-teal">
-                  {progressPercent}%
+
+                {/* Missed day / freeze section */}
+                {hasMissedDayThisWeek && (
+                  <div className="mt-4 border-t border-edge-subtle pt-4">
+                    {freezeUsed ? (
+                      <div className="flex items-start gap-2.5 rounded-xl border border-ice/20 bg-ice-soft/60 p-3">
+                        <Snowflake size={15} className="mt-0.5 shrink-0 text-ice" />
+                        <p className="text-[12.5px] leading-relaxed text-ash">
+                          <span className="font-semibold text-snow">Streak protected.</span>{' '}
+                          Saturday won't break your streak.{' '}
+                          {freezesRemaining} freeze{freezesRemaining === 1 ? '' : 's'} left this month.
+                        </p>
+                      </div>
+                    ) : canUseFreeze ? (
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-start gap-2">
+                          <Snowflake size={14} className="mt-0.5 shrink-0 text-ice" />
+                          <p className="text-[12.5px] text-ash">
+                            <span className="font-medium text-snow">Missed a day?</span>{' '}
+                            Use a Streak Freeze — {freezesRemaining} left.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={useStreakFreeze}
+                          className="shrink-0 rounded-full border border-ice/30 bg-ice-soft/70 px-3 py-2 text-[12px] font-semibold text-ice transition-colors hover:bg-ice/10 active:scale-[0.97]"
+                        >
+                          Use freeze
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-[12.5px] text-ash">
+                        Out of freezes — build today to start a fresh streak.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Progress bar */}
+                <div className="mt-5">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-edge-subtle">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-brand to-win transition-all duration-700"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                  </div>
+                  <p className="mt-1.5 text-[11px] text-dusk">
+                    {completedDays}/{challengeLength} days · {progressPercent}% complete
+                  </p>
                 </div>
               </div>
-
-              {!isFirstDay && currentStreak === 0 && (
-                <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                  Missing one day doesn&apos;t erase your progress. {completedDays} days already completed — start again today.
-                </p>
-              )}
-              {isFirstDay && (
-                <p className="mt-1 text-[13px] leading-relaxed text-muted">Your first build starts here.</p>
-              )}
-
-              <div className="mt-5 min-w-0 overflow-x-auto no-scrollbar">
-                <ContributionGrid
-                  total={challengeLength}
-                  completed={completedDays}
-                  liveDay={liveDay}
-                  liveDone={todayDone}
-                  onDayClick={openDay}
-                />
-              </div>
-              <p className="mt-2 text-[11.5px] text-muted">Tap any filled square to revisit that day.</p>
-
-              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-ink-600">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-marigold to-teal transition-all duration-700"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-              <p className="mt-2 text-[13px] text-muted">{progressPercent}% challenge complete</p>
             </section>
 
-            {/* Your Journey — access from Day 1, every card clickable */}
+            {/* Today's task */}
+            {todayTask && (
+              <section className="rounded-2xl border border-edge bg-card p-5 shadow-card sm:p-6">
+                <div className="flex items-center justify-between">
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-dusk">
+                    Today's Build
+                  </p>
+                  {todayDone && (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-win/25 bg-win/10 px-2.5 py-1 text-[11px] font-semibold text-win">
+                      <CheckCircle2 size={11} /> Done
+                    </span>
+                  )}
+                </div>
+                <h2 className="mt-2.5 font-display text-[1.25rem] font-bold leading-snug text-snow">
+                  {todayTask.title}
+                </h2>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Pill icon={Clock} color="text-ash">{todayTask.estimatedTime}</Pill>
+                  <Pill icon={Target} color="text-ash">{todayTask.difficulty}</Pill>
+                  <Pill icon={Puzzle} color="text-brand">{todayTask.track}</Pill>
+                </div>
+                <p className="mt-3 text-[13.5px] leading-relaxed text-ash line-clamp-2">
+                  {todayTask.description}
+                </p>
+                <Link
+                  to={`/day/${liveDay}`}
+                  className={`mt-4 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[14px] font-semibold transition-all active:scale-[0.97] ${
+                    todayDone
+                      ? 'border border-edge text-snow hover:bg-layer'
+                      : 'bg-brand text-white shadow-glow-brand hover:scale-[1.01]'
+                  }`}
+                >
+                  {todayDone ? 'View submission' : 'Continue Day ' + liveDay}
+                  <ArrowRight size={15} />
+                </Link>
+              </section>
+            )}
+
+            {/* Streak nudge — if not done */}
+            {!todayDone && !isFirstDay && (
+              <section className="flex items-center justify-between gap-3 rounded-2xl border border-fire/20 bg-fire-soft/60 px-4 py-3.5">
+                <div>
+                  <p className="text-[14px] font-semibold text-snow">Keep the Streak Alive</p>
+                  <p className="text-[12px] text-ash">1 build away from extending your streak.</p>
+                </div>
+                <Link
+                  to={`/day/${liveDay}`}
+                  className="shrink-0 text-[13px] font-semibold text-fire"
+                >
+                  Day {liveDay} →
+                </Link>
+              </section>
+            )}
+
+            {/* Your journey */}
             <section id="journey" className="min-w-0 scroll-mt-20">
-              <SectionHeading icon={Compass}>Your journey</SectionHeading>
-              <p className="mt-1.5 text-[13px] text-muted">
-                Every day from Day 1 is here — tap any card to see the brief and what you submitted.
+              <SectionLabel icon={Compass}>Your journey</SectionLabel>
+              <p className="mt-1 text-[12px] text-dusk">
+                Every day from Day 1 — tap any card to see the brief.
               </p>
-              <div className="mt-3 flex min-w-0 gap-2.5 overflow-x-auto pb-1 no-scrollbar sm:gap-3">
+              <div className="mt-3 flex min-w-0 gap-2 overflow-x-auto pb-1 no-scrollbar">
                 {journeyDays.map((day) => {
                   const status = getDayStatus(day);
                   const data = getDayData(day);
@@ -202,182 +315,114 @@ export default function Dashboard() {
                 })}
               </div>
             </section>
-
-            {/* Today's task */}
-            {todayTask && (
-              <section className="rounded-2xl border border-ink-600 bg-ink-700 p-5 shadow-card sm:p-6">
-                <div className="flex items-center justify-between">
-                  <p className="font-mono text-xs tracking-wide text-muted">TODAY&apos;S BUILD</p>
-                  {todayDone && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-teal/15 px-2.5 py-1 text-[11px] font-semibold text-teal">
-                      Completed
-                    </span>
-                  )}
-                </div>
-                <h2 className="mt-2 font-display text-xl font-semibold leading-snug text-paper">
-                  {todayTask.title}
-                </h2>
-                <p className="mt-1 font-mono text-[12.5px] text-muted">
-                  Day {liveDay} · {todayTask.track} · {todayTask.estimatedTime}
-                </p>
-                <p className="mt-3 text-[14px] leading-relaxed text-muted">{todayTask.description}</p>
-                <Link
-                  to={`/day/${liveDay}`}
-                  className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-semibold transition-transform active:scale-[0.98] ${
-                    todayDone
-                      ? "border border-ink-500 text-paper hover:bg-ink-600"
-                      : "bg-marigold text-white shadow-glow hover:scale-[1.01]"
-                  }`}
-                >
-                  {todayDone ? "View today's submission" : "Continue today's challenge"}
-                  <ArrowRight size={16} />
-                </Link>
-              </section>
-            )}
-
-            {/* Keep the streak alive */}
-            {!todayDone && (
-              <section className="flex flex-col gap-3 rounded-2xl border border-marigold/25 bg-marigold/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-5">
-                <div className="min-w-0">
-                  <p className="font-display text-[15px] font-semibold text-paper">Keep the Streak Alive</p>
-                  <p className="mt-0.5 text-[13px] text-muted">
-                    You&apos;re 1 build away from extending your streak.
-                  </p>
-                </div>
-                <Link
-                  to={`/day/${liveDay}`}
-                  className="shrink-0 whitespace-nowrap font-display text-[13.5px] font-semibold text-marigold"
-                >
-                  Continue Day {liveDay} →
-                </Link>
-              </section>
-            )}
           </div>
 
+          {/* ── Right column ───────────────────────────────────────── */}
           <div className="flex min-w-0 flex-col gap-5">
+
             {/* Quick stats */}
             <section>
-              <SectionHeading icon={ListChecks}>Quick stats</SectionHeading>
-              <p className="mt-1.5 text-[13px] text-muted">Tap a stat for what it means.</p>
+              <SectionLabel icon={ListChecks}>Quick stats</SectionLabel>
+              <p className="mt-1 text-[12px] text-dusk">Tap a stat to learn more.</p>
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <StatCard
                   icon={ListChecks}
                   value={String(completedDays)}
                   label="Days completed"
-                  accent="teal"
-                  onClick={() => setDetail({ kind: "stat", key: "completed" })}
+                  accent="win"
+                  onClick={() => setDetail({ kind: 'stat', key: 'completed' })}
                 />
                 <StatCard
                   icon={Flame}
                   value={String(currentStreak)}
                   label="Current streak"
-                  accent="marigold"
-                  onClick={() => setDetail({ kind: "stat", key: "streak" })}
+                  accent="fire"
+                  onClick={() => setDetail({ kind: 'stat', key: 'streak' })}
                 />
                 <StatCard
                   icon={Percent}
                   value={`${progressPercent}%`}
                   label="Completion"
-                  accent="teal"
-                  onClick={() => setDetail({ kind: "stat", key: "completion" })}
+                  accent="brand"
+                  onClick={() => setDetail({ kind: 'stat', key: 'completion' })}
                 />
                 <StatCard
                   icon={Trophy}
                   value={`#${student.standing}`}
-                  label="Your standing"
-                  accent="coral"
-                  onClick={() => setDetail({ kind: "stat", key: "standing" })}
+                  label="Standing"
+                  accent="gem"
+                  onClick={() => setDetail({ kind: 'stat', key: 'standing' })}
                 />
               </div>
             </section>
 
-            {/* Weekly consistency */}
-            <section className="relative overflow-hidden rounded-2xl border border-ink-600 bg-gradient-to-br from-ink-700 via-ink-700 to-frost/[0.06] p-4 shadow-card sm:p-6">
-              {/* Decorative glow — purely visual, ignored by screen readers */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-frost/10 blur-3xl sm:h-40 sm:w-40 md:h-48 md:w-48"
-              />
-              <div className="relative">
-                <SectionHeading icon={Flame}>This week</SectionHeading>
-                <div className="mt-4 sm:mt-5">
-                  <WeeklyStrip days={weekly} />
-                </div>
-
-                {hasMissedDayThisWeek && (
-                  <div className="mt-4 border-t border-ink-600 pt-4 sm:mt-5 sm:pt-5">
-                    {freezeUsed ? (
-                      <div className="flex items-start gap-2.5 rounded-xl bg-frost/[0.08] p-3 sm:p-3.5">
-                        <Snowflake size={16} className="mt-0.5 shrink-0 text-frost" />
-                        <p className="text-[12.5px] leading-relaxed text-muted sm:text-[13px]">
-                          <span className="font-semibold text-paper">Streak protected.</span> Saturday
-                          won&apos;t break your streak. {freezesRemaining} freeze{freezesRemaining === 1 ? "" : "s"} left
-                          this month.
-                        </p>
-                      </div>
-                    ) : canUseFreeze ? (
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                        <div className="flex items-start gap-2.5">
-                          <Snowflake size={16} className="mt-0.5 shrink-0 text-frost" />
-                          <p className="text-[12.5px] leading-relaxed text-muted sm:text-[13px]">
-                            <span className="font-semibold text-paper">Missed a day?</span> Life happens. Use a
-                            Streak Freeze to protect it — {freezesRemaining} left this month.
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={useStreakFreeze}
-                          className="w-full shrink-0 rounded-full border border-frost/40 bg-frost/10 px-4 py-2.5 text-[13px] font-semibold text-frost shadow-frostglow transition-colors hover:bg-frost/20 active:scale-[0.98] sm:w-auto sm:py-2"
-                        >
-                          Use a freeze
-                        </button>
-                      </div>
-                    ) : (
-                      <p className="text-[12.5px] leading-relaxed text-muted sm:text-[13px]">
-                        Out of freezes for this month — no worries, build today to start a fresh streak.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </section>
-
-            {/* Live GitHub activity — real API call, the app's one live-data feature */}
-            <GithubActivityCard username={student.githubUsername} />
+            {/* Recruiter Radar */}
+            <RecruiterRadar
+              score={student.visibilityScore}
+              profileViews={student.profileViews}
+              recruiterSearches={student.recruiterSearches}
+              linkedinPosts={student.linkedinPosts}
+              weeklyViewsChange={student.weeklyViewsChange}
+              streakDays={currentStreak}
+            />
 
             {/* Achievements */}
-            <section className="min-w-0">
-              <SectionHeading icon={Medal}>Achievements</SectionHeading>
-              <p className="mt-1.5 text-[13px] text-muted">Tap a badge to see how to unlock it.</p>
-              <div className="mt-3 flex min-w-0 gap-3 overflow-x-auto pb-1 no-scrollbar">
+            <section>
+              <SectionLabel icon={Medal}>Achievements</SectionLabel>
+              <p className="mt-1 text-[12px] text-dusk">Tap a badge to see how to unlock it.</p>
+              <div className="mt-3 flex min-w-0 gap-2.5 overflow-x-auto pb-1 no-scrollbar">
                 {achievements.map((a) => (
                   <AchievementCard
                     key={a.label}
                     icon={a.icon}
                     label={a.label}
                     unlocked={a.unlocked}
-                    onClick={() => setDetail({ kind: "achievement", key: a.key })}
+                    onClick={() => setDetail({ kind: 'achievement', key: a.key })}
                   />
                 ))}
               </div>
             </section>
 
+            {/* Live GitHub */}
+            <GithubActivityCard username={student.githubUsername} />
+
+            {/* Up next */}
             {nextDay && todayDone && (
-              <section className="rounded-2xl border border-ink-600 bg-ink-700 p-5 shadow-card">
-                <p className="font-mono text-xs text-muted">UP NEXT</p>
-                <p className="mt-1.5 font-display text-[15px] font-semibold text-paper">
+              <section className="rounded-2xl border border-edge bg-card p-4 shadow-card">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-dusk">Up Next</p>
+                <p className="mt-1.5 font-display text-[15px] font-semibold text-snow">
                   Day {nextDay.day} — {nextDay.title}
+                </p>
+                <p className="mt-1 flex items-center gap-1 text-[12px] text-dusk">
+                  <TrendingUp size={11} /> Unlocks after you complete today
                 </p>
               </section>
             )}
+
+            {/* 60-day progress grid */}
+            <section className="rounded-2xl border border-edge bg-card p-4 shadow-card sm:p-5">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-dusk">
+                60-Day Grid
+              </p>
+              <p className="mt-0.5 text-[12px] text-ash">Tap any square to revisit that day.</p>
+              <div className="mt-4 overflow-x-auto no-scrollbar">
+                <ContributionGrid
+                  total={challengeLength}
+                  completed={completedDays}
+                  liveDay={liveDay}
+                  liveDone={todayDone}
+                  onDayClick={openDay}
+                />
+              </div>
+            </section>
           </div>
         </div>
       </main>
 
       <BottomNav />
 
-      {/* Detail sheet — shown for day cards, stats, and achievements */}
-      {detail?.kind === "day" && (
+      {/* ── Detail sheets ──────────────────────────────────────────── */}
+      {detail?.kind === 'day' && (
         <DayDetailSheet
           day={detail.day}
           status={getDayStatus(detail.day)}
@@ -386,14 +431,20 @@ export default function Dashboard() {
           onClose={() => setDetail(null)}
         />
       )}
-      {detail?.kind === "stat" && (
+      {detail?.kind === 'stat' && (
         <StatDetailSheet
           statKey={detail.key}
-          values={{ completedDays, currentStreak, progressPercent, standing: student.standing, totalStudents: student.totalStudents }}
+          values={{
+            completedDays,
+            currentStreak,
+            progressPercent,
+            standing: student.standing,
+            totalStudents: student.totalStudents,
+          }}
           onClose={() => setDetail(null)}
         />
       )}
-      {detail?.kind === "achievement" && (
+      {detail?.kind === 'achievement' && (
         <AchievementDetailSheet
           achievement={achievements.find((a) => a.key === detail.key)!}
           completedDays={completedDays}
@@ -405,23 +456,53 @@ export default function Dashboard() {
   );
 }
 
-function SectionHeading({ icon: Icon, children }: { icon: React.ComponentType<{ size?: number; className?: string }>; children: React.ReactNode }) {
+/* ── Sub-components ─────────────────────────────────────────────────── */
+
+function SectionLabel({
+  icon: Icon,
+  children,
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex items-center gap-1.5 text-[13px] font-semibold uppercase tracking-wide text-muted">
-      <Icon size={13} />
+    <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-dusk">
+      <Icon size={12} />
       {children}
     </div>
   );
 }
 
+function Pill({
+  icon: Icon,
+  children,
+  color = 'text-ash',
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  children: React.ReactNode;
+  color?: string;
+}) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border border-edge bg-layer px-2.5 py-1 text-[12px] font-medium ${color}`}>
+      <Icon size={12} />
+      {children}
+    </span>
+  );
+}
+
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    return new Date(iso).toLocaleDateString('en-IN', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   } catch {
     return iso;
   }
 }
 
+/* ── Day detail sheet ─────────────────────────────────────────────── */
 function DayDetailSheet({
   day,
   status,
@@ -430,61 +511,66 @@ function DayDetailSheet({
   onClose,
 }: {
   day: number;
-  status: "done" | "today" | "locked";
+  status: 'done' | 'today' | 'locked';
   liveDay: number;
   submission?: { github: string; linkedin: string; submittedAt: string };
   onClose: () => void;
 }) {
   const data = getDayData(day);
+  const accentMap = { done: 'win' as const, today: 'fire' as const, locked: 'brand' as const };
 
   return (
     <DetailSheet
       open
       onClose={onClose}
-      eyebrow={`DAY ${day}${status === "today" ? " · TODAY" : ""}`}
-      title={data?.title ?? (status === "locked" ? "Not unlocked yet" : "Untitled build")}
-      accent={status === "done" ? "teal" : status === "today" ? "marigold" : "violet"}
+      eyebrow={`Day ${day}${status === 'today' ? ' · Today' : ''}`}
+      title={data?.title ?? (status === 'locked' ? 'Not unlocked yet' : 'Untitled build')}
+      accent={accentMap[status]}
     >
       {data && (
         <div className="mb-4 flex flex-wrap gap-2">
-          <InfoPill icon={Clock}>{data.estimatedTime}</InfoPill>
-          <InfoPill icon={Target}>{data.difficulty}</InfoPill>
-          <InfoPill icon={Puzzle}>{data.track}</InfoPill>
+          <Pill icon={Clock} color="text-ash">{data.estimatedTime}</Pill>
+          <Pill icon={Target} color="text-ash">{data.difficulty}</Pill>
+          <Pill icon={Puzzle} color="text-brand">{data.track}</Pill>
         </div>
       )}
 
       {data ? (
-        <p className="text-[14px] leading-relaxed text-muted">{data.description}</p>
+        <p className="text-[14px] leading-relaxed text-ash">{data.description}</p>
       ) : (
-        <p className="text-[14px] leading-relaxed text-muted">
-          Content for this day hasn&apos;t been published yet — check back as the challenge continues.
+        <p className="text-[14px] leading-relaxed text-ash">
+          Content for this day hasn't been published yet — check back as the challenge continues.
         </p>
       )}
 
       {data && data.requirements.length > 0 && (
         <ul className="mt-4 flex flex-col gap-2">
           {data.requirements.map((r) => (
-            <li key={r} className="flex items-start gap-2 text-[13.5px] text-paper">
-              <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-teal" />
-              <span>{r}</span>
+            <li key={r} className="flex items-start gap-2 text-[13px] text-snow">
+              <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-win" />
+              {r}
             </li>
           ))}
         </ul>
       )}
 
-      {status === "locked" && (
-        <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-violet/25 bg-violet/[0.07] p-3.5">
-          <Lock size={15} className="mt-0.5 shrink-0 text-violet" />
-          <p className="text-[13px] leading-relaxed text-muted">
-            This unlocks once you finish Day {liveDay}
-            {day > liveDay + 1 ? `, and the ${day - liveDay - 1} day${day - liveDay - 1 === 1 ? "" : "s"} after it` : ""}.
+      {status === 'locked' && (
+        <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-brand/20 bg-brand-soft/60 p-3.5">
+          <Lock size={14} className="mt-0.5 shrink-0 text-brand" />
+          <p className="text-[13px] leading-relaxed text-ash">
+            Unlocks once you finish Day {liveDay}
+            {day > liveDay + 1
+              ? `, and the ${day - liveDay - 1} day${day - liveDay - 1 === 1 ? '' : 's'} after it`
+              : ''}.
           </p>
         </div>
       )}
 
-      {status !== "locked" && submission && (
-        <div className="mt-5 rounded-xl border border-ink-600 bg-ink-800 p-3.5">
-          <p className="font-mono text-[11px] tracking-wide text-muted">SUBMITTED · {formatDate(submission.submittedAt)}</p>
+      {status !== 'locked' && submission && (
+        <div className="mt-5 rounded-xl border border-edge bg-layer/60 p-3.5">
+          <p className="font-mono text-[10px] uppercase tracking-widest text-dusk">
+            Submitted · {formatDate(submission.submittedAt)}
+          </p>
           <div className="mt-2.5 flex flex-col gap-2">
             <SubmittedLink icon={GitCommitVertical} url={submission.github} />
             <SubmittedLink icon={Share2} url={submission.linkedin} />
@@ -492,60 +578,71 @@ function DayDetailSheet({
         </div>
       )}
 
-      {status !== "locked" && !submission && (
-        <div className="mt-5 rounded-xl border border-ink-600 bg-ink-800 p-3.5">
-          <p className="text-[13px] leading-relaxed text-muted">
-            {status === "today"
-              ? "Not submitted yet today — you can still complete it."
-              : "This day is marked complete, but no submission link was saved for it."}
+      {status !== 'locked' && !submission && (
+        <div className="mt-5 rounded-xl border border-edge bg-layer/60 p-3.5">
+          <p className="text-[13px] text-ash">
+            {status === 'today'
+              ? 'Not submitted yet — you can still complete it today.'
+              : 'This day is marked complete but no submission link was saved.'}
           </p>
         </div>
       )}
 
-      {status === "today" && (
+      {status === 'today' && (
         <Link
           to={`/day/${day}`}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-marigold px-5 py-3 text-[14px] font-semibold text-white shadow-glow"
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3 text-[14px] font-semibold text-white shadow-glow-brand"
         >
-          Go to Day {day}
-          <ArrowRight size={15} />
+          Go to Day {day} <ArrowRight size={15} />
         </Link>
       )}
-      {status === "done" && (
+      {status === 'done' && (
         <Link
           to={`/day/${day}`}
-          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-ink-500 px-5 py-3 text-[14px] font-semibold text-paper hover:bg-ink-600"
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-edge px-5 py-3 text-[14px] font-semibold text-snow hover:bg-layer"
         >
-          Open full page
-          <ExternalLink size={14} />
+          Open full page <ExternalLink size={14} />
         </Link>
       )}
     </DetailSheet>
   );
 }
 
+/* ── Stat detail sheet ────────────────────────────────────────────── */
 const STAT_INFO: Record<
-  "completed" | "streak" | "completion" | "standing",
-  { title: string; body: (v: { completedDays: number; currentStreak: number; progressPercent: number; standing: number; totalStudents: number }) => string }
+  'completed' | 'streak' | 'completion' | 'standing',
+  {
+    title: string;
+    body: (v: {
+      completedDays: number;
+      currentStreak: number;
+      progressPercent: number;
+      standing: number;
+      totalStudents: number;
+    }) => string;
+  }
 > = {
   completed: {
-    title: "Days completed",
-    body: (v) => `You've submitted proof of work for ${v.completedDays} day${v.completedDays === 1 ? "" : "s"} of the 60-day challenge. This counts every day you've submitted, streak or not.`,
+    title: 'Days completed',
+    body: (v) =>
+      `You've submitted proof of work for ${v.completedDays} day${v.completedDays === 1 ? '' : 's'} of the 60-day challenge. This counts every day you've submitted, streak or not.`,
   },
   streak: {
-    title: "Current streak",
+    title: 'Current streak',
     body: (v) =>
       v.currentStreak > 0
-        ? `You've submitted ${v.currentStreak} day${v.currentStreak === 1 ? "" : "s"} in a row, ending today. Miss a day and this resets to 0 — unless you protect it with a Streak Freeze.`
-        : `Your streak is at 0 right now. Submit today's build to start a new one — a missed day doesn't erase the days you've already completed.`,
+        ? `You've submitted ${v.currentStreak} day${v.currentStreak === 1 ? '' : 's'} in a row. Miss one and this resets to 0 — unless you protect it with a Streak Freeze.`
+        : `Your streak is at 0. Submit today's build to start a new one — a missed day doesn't erase days you've already completed.`,
   },
   completion: {
-    title: "Completion",
-    body: (v) => `${v.progressPercent}% of the full 60-day challenge is done — that's days completed divided by 60, rounded to the nearest percent.`,
+    title: 'Completion',
+    body: (v) =>
+      `${v.progressPercent}% of the 60-day challenge done — that's ${v.completedDays} days completed out of 60.`,
   },
   standing: {
-    title: "Your standing",
-    body: (v) => `You're ranked #${v.standing} out of ${v.totalStudents.toLocaleString()} students currently in the challenge, based on days completed and streak length.`,
+    title: 'Your standing',
+    body: (v) =>
+      `You're ranked #${v.standing} out of ${v.totalStudents.toLocaleString()} students based on days completed and streak length.`,
   },
 };
 
@@ -554,82 +651,99 @@ function StatDetailSheet({
   values,
   onClose,
 }: {
-  statKey: "completed" | "streak" | "completion" | "standing";
-  values: { completedDays: number; currentStreak: number; progressPercent: number; standing: number; totalStudents: number };
+  statKey: 'completed' | 'streak' | 'completion' | 'standing';
+  values: {
+    completedDays: number;
+    currentStreak: number;
+    progressPercent: number;
+    standing: number;
+    totalStudents: number;
+  };
   onClose: () => void;
 }) {
   const info = STAT_INFO[statKey];
   return (
-    <DetailSheet open onClose={onClose} eyebrow="QUICK STAT" title={info.title} accent="teal">
-      <p className="text-[14px] leading-relaxed text-muted">{info.body(values)}</p>
+    <DetailSheet open onClose={onClose} eyebrow="Quick Stat" title={info.title} accent="brand">
+      <p className="text-[14px] leading-relaxed text-ash">{info.body(values)}</p>
     </DetailSheet>
   );
 }
 
+/* ── Achievement detail sheet ────────────────────────────────────── */
 function AchievementDetailSheet({
   achievement,
   completedDays,
   currentStreak,
   onClose,
 }: {
-  achievement: { label: string; description: string; unlocked: boolean; goal: number; key: string };
+  achievement: {
+    label: string;
+    description: string;
+    unlocked: boolean;
+    goal: number;
+    key: string;
+  };
   completedDays: number;
   currentStreak: number;
   onClose: () => void;
 }) {
-  const isStreakBased = achievement.key === "streak-7";
+  const isStreakBased = achievement.key === 'streak-7';
   const progressValue = isStreakBased ? currentStreak : completedDays;
   const pct = Math.min(100, Math.round((progressValue / achievement.goal) * 100));
 
   return (
-    <DetailSheet open onClose={onClose} eyebrow="ACHIEVEMENT" title={achievement.label} accent="violet">
-      <p className="text-[14px] leading-relaxed text-muted">{achievement.description}</p>
-
-      <div className="mt-4">
-        <div className="flex items-center justify-between text-[12.5px] text-muted">
-          <span>{achievement.unlocked ? "Unlocked" : "Progress"}</span>
+    <DetailSheet
+      open
+      onClose={onClose}
+      eyebrow="Achievement"
+      title={achievement.label}
+      accent="gem"
+    >
+      <p className="text-[14px] leading-relaxed text-ash">{achievement.description}</p>
+      <div className="mt-5">
+        <div className="flex justify-between text-[12px] text-dusk">
+          <span>{achievement.unlocked ? 'Unlocked' : 'Progress'}</span>
           <span className="font-mono">
             {Math.min(progressValue, achievement.goal)}/{achievement.goal}
           </span>
         </div>
-        <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-ink-600">
+        <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-edge-subtle">
           <div
-            className={`h-full rounded-full transition-all duration-700 ${achievement.unlocked ? "bg-violet" : "bg-ink-500"}`}
+            className={`h-full rounded-full transition-all duration-700 ${
+              achievement.unlocked ? 'bg-gem' : 'bg-edge'
+            }`}
             style={{ width: `${pct}%` }}
           />
         </div>
       </div>
-
       {achievement.unlocked && (
-        <div className="mt-4 flex items-center gap-2 rounded-xl border border-violet/25 bg-violet/[0.07] p-3">
-          <Medal size={16} className="shrink-0 text-violet" />
-          <p className="text-[13px] font-medium text-paper">Unlocked — nice work.</p>
+        <div className="mt-4 flex items-center gap-2 rounded-xl border border-gem/25 bg-gem-soft/60 p-3">
+          <Zap size={15} className="shrink-0 text-gem" />
+          <p className="text-[13px] font-medium text-gem-light">Unlocked — well done.</p>
         </div>
       )}
     </DetailSheet>
   );
 }
 
-function InfoPill({ icon: Icon, children }: { icon: React.ComponentType<{ size?: number; className?: string }>; children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-ink-600 bg-ink-800 px-3 py-1.5 text-[12.5px] font-medium text-paper">
-      <Icon size={13} />
-      {children}
-    </span>
-  );
-}
-
-function SubmittedLink({ icon: Icon, url }: { icon: React.ComponentType<{ size?: number; className?: string }>; url: string }) {
+/* ── Submitted link row ────────────────────────────────────────────── */
+function SubmittedLink({
+  icon: Icon,
+  url,
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  url: string;
+}) {
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2.5 rounded-xl border border-ink-600 bg-ink-700 px-3.5 py-3 text-[13px] text-paper transition-colors hover:border-teal/40"
+      className="flex items-center gap-2.5 rounded-xl border border-edge bg-card px-3.5 py-3 text-[12.5px] text-snow transition-colors hover:border-win/30"
     >
-      <Icon size={15} className="shrink-0 text-teal" />
+      <Icon size={14} className="shrink-0 text-win" />
       <span className="min-w-0 flex-1 truncate">{url}</span>
-      <ExternalLink size={13} className="ml-auto shrink-0 text-muted" />
+      <ExternalLink size={12} className="ml-auto shrink-0 text-dusk" />
     </a>
   );
 }

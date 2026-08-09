@@ -1,5 +1,5 @@
-import type { LucideIcon } from "lucide-react";
-import { Lock } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 export default function AchievementCard({
   icon: Icon,
@@ -13,34 +13,32 @@ export default function AchievementCard({
   onClick?: () => void;
 }) {
   return (
-    <div
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
+    <button
+      type="button"
       onClick={onClick}
-      onKeyDown={
-        onClick
-          ? (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onClick();
-              }
-            }
-          : undefined
-      }
-      className={`flex w-[92px] shrink-0 flex-col items-center gap-2 rounded-2xl border p-3 text-center sm:w-[104px] sm:p-3.5 ${
-        onClick ? "cursor-pointer transition-transform active:scale-[0.97]" : ""
-      } ${unlocked ? "border-marigold/30 bg-ink-700 shadow-card" : "border-ink-600 bg-ink-700/40"}`}
+      className={`flex w-24 shrink-0 flex-col items-center gap-2 rounded-2xl border p-3.5 text-center transition-all active:scale-[0.96] ${
+        unlocked
+          ? 'border-gem/30 bg-gem-soft/60 shadow-glow-gem'
+          : 'border-edge bg-card opacity-60'
+      }`}
     >
       <div
-        className={`grid h-11 w-11 place-items-center rounded-full ${
-          unlocked ? "bg-marigold/15 text-marigold" : "bg-ink-600 text-muted"
+        className={`relative grid h-11 w-11 place-items-center rounded-full ${
+          unlocked ? 'bg-gem/15 text-gem' : 'bg-layer text-dusk'
         }`}
       >
-        {unlocked ? <Icon size={20} /> : <Lock size={17} />}
+        {unlocked ? <Icon size={20} /> : <Lock size={16} />}
+        {unlocked && (
+          <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full bg-gem border-2 border-base" />
+        )}
       </div>
-      <span className={`text-[11.5px] font-medium leading-tight ${unlocked ? "text-paper" : "text-muted"}`}>
+      <span
+        className={`text-[11px] font-medium leading-tight ${
+          unlocked ? 'text-gem-light' : 'text-dusk'
+        }`}
+      >
         {label}
       </span>
-    </div>
+    </button>
   );
 }

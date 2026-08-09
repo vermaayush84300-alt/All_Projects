@@ -1,4 +1,22 @@
-import { Check, Lock } from "lucide-react";
+import { Check, Lock } from 'lucide-react';
+
+const statusConfig = {
+  done: {
+    border: 'border-win/25',
+    bg: 'bg-win-soft/40',
+    badge: 'bg-win/15 text-win',
+  },
+  today: {
+    border: 'border-fire/35',
+    bg: 'bg-fire-soft/50 shadow-glow-fire',
+    badge: 'bg-fire/15 text-fire',
+  },
+  locked: {
+    border: 'border-edge',
+    bg: 'bg-card/60',
+    badge: 'bg-layer text-dusk',
+  },
+};
 
 export default function DayCard({
   day,
@@ -8,42 +26,39 @@ export default function DayCard({
 }: {
   day: number;
   title?: string;
-  status: "done" | "today" | "locked";
+  status: 'done' | 'today' | 'locked';
   onClick: () => void;
 }) {
-  const styles = {
-    done: "border-teal/30 bg-ink-700",
-    today: "border-marigold/40 bg-ink-700 shadow-glow",
-    locked: "border-ink-600 bg-ink-700/40",
-  }[status];
+  const s = statusConfig[status];
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-20 shrink-0 flex-col gap-1.5 rounded-2xl border p-2.5 text-left shadow-card transition-transform active:scale-[0.97] sm:w-[88px] sm:gap-2 sm:p-3 ${styles}`}
+      className={`flex w-[76px] shrink-0 flex-col gap-2 rounded-2xl border p-2.5 text-left shadow-card transition-all active:scale-[0.96] sm:w-[88px] sm:p-3 ${s.border} ${s.bg}`}
     >
       <div className="flex items-center justify-between gap-1">
-        <span className="font-mono text-[10px] font-semibold text-muted sm:text-[11px]">DAY {day}</span>
-        {status === "done" && (
-          <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-teal/20 text-teal sm:h-5 sm:w-5">
-            <Check size={10} strokeWidth={3} />
-          </span>
-        )}
-        {status === "today" && <span className="h-2 w-2 shrink-0 rounded-full bg-marigold animate-pulse-slow" />}
-        {status === "locked" && (
-          <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-ink-600 text-muted sm:h-5 sm:w-5">
-            <Lock size={9} />
-          </span>
-        )}
+        <span className="font-mono text-[10px] font-semibold text-dusk">
+          D{day}
+        </span>
+        <span className={`grid h-4 w-4 shrink-0 place-items-center rounded-full ${s.badge}`}>
+          {status === 'done' && <Check size={9} strokeWidth={3} />}
+          {status === 'today' && <span className="h-1.5 w-1.5 rounded-full bg-fire" />}
+          {status === 'locked' && <Lock size={8} />}
+        </span>
       </div>
       <p
-        className={`text-[11px] font-medium leading-snug sm:text-[12px] ${
-          status === "locked" ? "text-muted" : "text-paper"
+        className={`text-[10.5px] font-medium leading-snug sm:text-[11px] ${
+          status === 'locked' ? 'text-dusk' : 'text-snow'
         }`}
-        style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}
+        style={{
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}
       >
-        {title ?? (status === "locked" ? "Locked" : "Untitled build")}
+        {title ?? (status === 'locked' ? 'Locked' : 'Untitled')}
       </p>
     </button>
   );
