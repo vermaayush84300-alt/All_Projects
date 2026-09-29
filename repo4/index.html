@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amazon.in – Shop Online</title>
+    <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- NAV -->
+    <nav>
+        <div class="logo" onclick="scrollTo({top:0,behavior:'smooth'})">
+            <span>a</span>mazon<sup>.in</sup>
+        </div>
+        <div class="deliver-box">
+            <span class="sm">Deliver to</span>
+            <span class="bg"> India</span>
+        </div>
+        <div class="search-bar">
+            <select id="search-cat">
+                <option>All</option>
+                <option>Electronics</option>
+                <option>Books</option>
+                <option>Fashion</option>
+                <option>Home & Kitchen</option>
+                <option>Beauty</option>
+                <option>Mobiles</option>
+                <option>Watches</option>
+                <option>Health</option>
+                <option>Accessories</option>
+                <option>Furniture</option>
+                <option>Clothing</option>
+            </select>
+            <input type="text" id="search-input" placeholder="Search Amazon.in" />
+            <button onclick="doSearch()">🔍</button>
+        </div>
+        <div class="nav-item" onclick="toggleSignIn()">
+            <span class="sm" id="nav-greeting">Hello, sign in</span>
+            <span class="bg">Account &amp; Lists ▾</span>
+        </div>
+        <div class="nav-item">
+            <span class="sm">Returns</span>
+            <span class="bg">&amp; Orders</span>
+        </div>
+        <div class="cart-btn" onclick="openCart()">
+            <span class="badge hidden" id="cart-badge">0</span>
+            <span class="cart-icon">🛒</span>
+            <span class="cart-label">Cart</span>
+        </div>
+    </nav>
+
+    <!-- PANEL -->
+    <div class="panel">
+        <span class="panel-item">☰ All</span>
+        <span class="panel-item">MX Player</span>
+        <span class="panel-item">Customer Service</span>
+        <span class="panel-item">Gift Cards</span>
+        <span class="panel-item">Registry</span>
+        <span class="panel-item">Sell</span>
+        <span class="panel-item">Amazon Pay</span>
+        <span class="panel-item">Fashion</span>
+        <span class="panel-item">Electronics</span>
+        <span class="panel-item">Books</span>
+        <span class="panel-item">Home & Kitchen</span>
+        <span class="panel-item">Mobiles</span>
+        <span class="panel-item">Furniture</span>
+        <span class="panel-deal"> Deals in Electronics</span>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero-wrap">
+        <img id="hero-img" src="" alt="sale" />
+        <div class="hero-overlay">
+            <h2 id="hero-title"></h2>
+            <p id="hero-sub"></p>
+        </div>
+        <button class="hero-arrow left" onclick="heroNav(-1)">‹</button>
+        <button class="hero-arrow right" onclick="heroNav(1)">›</button>
+        <div class="hero-dots" id="hero-dots"></div>
+    </div>
+
+    <!-- PRODUCT SECTIONS -->
+    <div id="sections-container"></div>
+
+    <!-- PAGE SIGN IN -->
+    <div class="page-signin" id="page-signin">
+        <h3>See personalised recommendations</h3>
+        <button class="page-signin-btn" onclick="openSignIn()">Sign in</button>
+        <p>New customer? <a onclick="openSignIn()">Start here.</a></p>
+    </div>
+
+    <!-- BACK TO TOP -->
+    <div class="back-to-top" onclick="scrollTo({top:0,behavior:'smooth'})">↑ Back to top</div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-top">
+            <div class="footer-col">
+                <h4>Get to Know Us</h4>
+                <a href="#">About Amazon</a><a href="#">Careers</a><a href="#">Press Releases</a><a href="#">Amazon
+                    Science</a>
+            </div>
+            <div class="footer-col">
+                <h4>Connect with Us</h4>
+                <a href="#">Facebook</a><a href="#">Twitter</a><a href="#">Instagram</a>
+            </div>
+            <div class="footer-col">
+                <h4>Make Money with Us</h4>
+                <a href="#">Sell on Amazon</a><a href="#">Fulfillment by Amazon</a><a href="#">Advertise Your
+                    Products</a><a href="#">Amazon Pay on Merchants</a>
+            </div>
+            <div class="footer-col">
+                <h4>Let Us Help You</h4>
+                <a href="#">Your Account</a><a href="#">Returns Centre</a><a href="#">Amazon App Download</a><a
+                    href="#">Help</a>
+            </div>
+        </div>
+        <hr class="footer-hr" />
+        <div class="footer-middle">
+            <span class="footer-logo">amazon</span>
+            <button class="footer-lang-btn">🌐 English</button>
+            <button class="footer-lang-btn">🇮🇳 India</button>
+        </div>
+        <div class="footer-services">
+            <div class="footer-service">
+                <h5>AbeBooks</h5>
+                <p>Books, art &amp; collectibles</p>
+            </div>
+            <div class="footer-service">
+                <h5>Amazon Web Services</h5>
+                <p>Scalable Cloud Computing</p>
+            </div>
+            <div class="footer-service">
+                <h5>IMDb</h5>
+                <p>Movies, TV &amp; Celebrities</p>
+            </div>
+            <div class="footer-service">
+                <h5>Amazon Business</h5>
+                <p>Everything For Your Business</p>
+            </div>
+            <div class="footer-service">
+                <h5>Amazon Prime Music</h5>
+                <p>100 million songs, ad-free</p>
+            </div>
+            <div class="footer-service">
+                <h5>Amazon Pay</h5>
+                <p>Fast, easy payments</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <a href="#">Conditions of Use &amp; Sale</a>
+            <a href="#">Privacy Notice</a>
+            <a href="#">Interest-Based Ads</a>
+            <div class="footer-copy">© 1996-2025, Amazon.com, Inc. or its affiliates</div>
+        </div>
+    </footer>
+
+    <!-- PRODUCT MODAL -->
+    <div class="overlay hidden" id="product-overlay" onclick="closeProduct()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span id="modal-breadcrumb" style="font-size:14px;color:#555;"></span>
+                <button class="modal-close" onclick="closeProduct()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="pd-left">
+                    <img id="pd-main-img" class="pd-main-img" src="" alt="" />
+                    <div class="pd-thumbs" id="pd-thumbs"></div>
+                    <div>
+                        <div class="pd-title" id="pd-title"></div>
+                        <div class="pd-brand" id="pd-brand"></div>
+                        <div class="pd-rating-row" id="pd-rating-row"></div>
+                        <hr class="divider" />
+                        <div class="pd-price-row" id="pd-price-row"></div>
+                        <div class="pd-delivery">Inclusive of all taxes. <span>Free delivery</span> on orders above
+                            ₹499.</div>
+                        <hr class="divider" />
+                        <div class="pd-about-title">About this item</div>
+                        <div class="pd-desc" id="pd-desc"></div>
+                        <div class="pd-about-title">Key Highlights</div>
+                        <div class="pd-highlights" id="pd-highlights"></div>
+                    </div>
+                </div>
+                <div class="pd-right">
+                    <div class="pd-price" id="pdr-price"></div>
+                    <span class="pd-mrp" id="pdr-mrp"></span>
+                    <div class="pd-savings" id="pdr-savings"></div>
+                    <div class="in-stock"><span>✓ In Stock</span></div>
+                    <div class="free-delivery">🚚 Free delivery by <strong>Tomorrow</strong></div>
+                    <div class="qty-row">
+                        <span>Qty:</span>
+                        <select id="pd-qty">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                            <option>10</option>
+                        </select>
+                    </div>
+                    <button class="add-cart-btn" onclick="addCurrentToCart()">🛒 Add to Cart</button>
+                    <button class="buy-now-btn" onclick="buyNow()">⚡ Buy Now</button>
+                    <div class="seller-info">Sold by: <span id="pdr-seller"></span></div>
+                    <div class="policy">✔ 7-day replacement policy</div>
+                    <div class="policy">✔ 1-year manufacturer warranty</div>
+                    <div class="bank-offer">
+                        <div class="offer-title"> Bank Offer</div>
+                        <p>10% off on SBI Credit Card, up to ₹1500. T&amp;C apply.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-overlay hidden" id="cart-overlay" onclick="closeCart()"></div>
+    <div class="cart-side" id="cart-side">
+        <div class="cart-head">
+            <h2 id="cart-heading">Shopping Cart (0)</h2>
+            <button class="cart-close" onclick="closeCart()">✕</button>
+        </div>
+        <div class="cart-body" id="cart-body"></div>
+        <div class="cart-footer" id="cart-footer" style="display:none;">
+            <div class="cart-subtotal">
+                <span id="cart-subtotal-label">Subtotal (0 items):</span>
+                <span id="cart-subtotal-price">₹0</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+            <button class="clear-cart-btn" onclick="clearCart()">Clear Cart</button>
+        </div>
+    </div>
+
+    <!-- SIGN IN MODAL -->
+    <div class="overlay hidden" id="signin-overlay" onclick="closeSignIn()">
+        <div class="signin-box" onclick="event.stopPropagation()">
+            <button class="signin-close" onclick="closeSignIn()">✕</button>
+            <div class="signin-logo"><span>a</span>mazon<sup style="font-size:12px;color:#ff9900;">.in</sup></div>
+            <div id="signin-step-email">
+                <div class="signin-title">Sign in</div>
+                <label class="signin-label">Email or mobile phone number</label>
+                <input class="signin-input" type="email" id="signin-email-input" placeholder="you@example.com"
+                    onkeydown="if(event.key==='Enter')doSignIn()" />
+                <button class="signin-btn" onclick="doSignIn()">Continue</button>
+                <div class="signin-note">By continuing, you agree to Amazon's <a>Conditions of Use</a> and <a>Privacy
+                        Notice</a>.</div>
+                <hr class="signin-divider" />
+                <div class="signin-new">New to Amazon? <a>Create your Amazon account</a></div>
+            </div>
+            <div id="signin-step-password" style="display:none;">
+                <div class="signin-title">Enter your password</div>
+                <div class="signin-email-change">📧 <span id="signin-email-display"></span> <a
+                        onclick="backToEmail()">(Change)</a></div>
+                <label class="signin-label">Password</label>
+                <input class="signin-input" type="password" id="signin-pass-input" placeholder="At least 6 characters"
+                    onkeydown="if(event.key==='Enter')doSignIn()" />
+                <button class="signin-btn" onclick="doSignIn()">Sign in</button>
+                <div class="signin-forgot"><a>Forgot your password?</a></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
